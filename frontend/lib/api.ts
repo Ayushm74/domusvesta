@@ -3,7 +3,7 @@
 import axios from "axios";
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL || "https://domusvesta-1.onrender.com";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
