@@ -22,13 +22,29 @@ const PORT = process.env.PORT || 5000;
 // Database
 connectDB();
 
-// Middleware
+// ✅ FIXED CORS (IMPORTANT)
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://domusvesta-frontend-lb1v.vercel.app"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "*",
+    origin: function (origin, callback) {
+      // allow requests with no origin (like mobile apps / postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
+
+// Middleware
 app.use(helmet());
 app.use(express.json());
 app.use(morgan("dev"));
@@ -49,20 +65,19 @@ app.use("/api/applications", applicationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/meta", metaRoutes);
 
+// Health check
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-// Global error handler (simple)
-// eslint-disable-next-line no-unused-vars
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err);
-  res
-    .status(err.statusCode || 500)
-    .json({ message: err.message || "Server error" });
+  res.status(err.statusCode || 500).json({
+    message: err.message || "Server error",
+  });
 });
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
-
