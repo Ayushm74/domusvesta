@@ -9,6 +9,12 @@ import {
   useState,
 } from "react";
 import { setApiAuthToken } from "./api";
+import {
+  AUTH_EXPIRED_EVENT,
+  clearStoredAuth,
+  getStoredAuth,
+  saveStoredAuth,
+} from "./auth-storage";
 
 export type UserRole = "client" | "professional" | "admin";
 
@@ -33,8 +39,6 @@ type AuthContextValue = AuthState & {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "domusvesta_auth_v1";
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -42,32 +46,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as { token: string; user: AuthUser };
-      setToken(parsed.token);
-      setUser(parsed.user);
-      setApiAuthToken(parsed.token);
+      const storedAuth = getStoredAuth();
+      if (!storedAuth) return;
+      setToken(storedAuth.token);
+      setUser(storedAuth.user);
+      setApiAuthToken(storedAuth.token);
     } finally {
       setIsReady(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setToken(null);
+      setUser(null);
+      setApiAuthToken(null);
+    };
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
   }, []);
 
   const setAuth = (newToken: string, newUser: AuthUser) => {
     setToken(newToken);
     setUser(newUser);
     setApiAuthToken(newToken);
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ token: newToken, user: newUser })
-    );
+    saveStoredAuth(newToken, newUser);
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
     setApiAuthToken(null);
-    localStorage.removeItem(STORAGE_KEY);
+    clearStoredAuth();
   };
 
   const value = useMemo<AuthContextValue>(

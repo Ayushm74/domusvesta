@@ -42,6 +42,9 @@ export default function LandingPage() {
             <Link href="/login" className="hover:text-sky-400">
               Login
             </Link>
+            <Link href="/ai-assistant" className="hover:text-sky-400">
+              AI Assistant
+            </Link>
             <Link
               href="/signup"
               className="rounded-full bg-sky-500 px-4 py-1.5 text-sm font-medium text-slate-950 hover:bg-sky-400"
@@ -83,6 +86,12 @@ export default function LandingPage() {
               <div>Verified professionals</div>
               <div>Secure payments</div>
             </div>
+            <Link
+              href="/ai-assistant"
+              className="inline-flex rounded-xl border border-sky-500 px-4 py-2 text-sm font-medium text-sky-300 hover:bg-sky-500 hover:text-slate-950"
+            >
+              Start with AI
+            </Link>
           </div>
 
           <div className="flex-1 space-y-4 rounded-3xl bg-slate-900/70 p-5 ring-1 ring-slate-800">

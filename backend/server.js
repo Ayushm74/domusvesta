@@ -5,6 +5,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
 
+
 import { connectDB } from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -13,6 +14,7 @@ import professionalRoutes from "./routes/professionalRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import metaRoutes from "./routes/metaRoutes.js";
+import aiAgentRoutes from "./routes/aiAgentRoutes.js";
 
 dotenv.config();
 
@@ -64,6 +66,7 @@ app.use("/api/professionals", professionalRoutes);
 app.use("/api/applications", applicationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/meta", metaRoutes);
+app.use("/api/ai-agent", aiAgentRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
